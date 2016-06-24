@@ -233,7 +233,7 @@ __weak static UIViewController *_defaultViewController;
     else
     {
         [currentView.viewController.view addSubview:currentView];
-        if ([TSMessage iOS7StyleEnabled]) {
+        if ([TSMessage iOS7StyleEnabled] && currentView.viewController.edgesForExtendedLayout != UIRectEdgeNone) {
             addStatusBarHeightToVerticalOffset();
         }
     }
