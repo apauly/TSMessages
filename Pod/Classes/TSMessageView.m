@@ -21,6 +21,11 @@ static NSMutableDictionary *_notificationDesign;
 - (void)fadeOutNotification:(TSMessageView *)currentView; // private method of TSMessage, but called by TSMessageView in -[fadeMeOut]
 @end
 
+typedef NS_ENUM(NSInteger, TSMessageButtonPosition) {
+    TSMessageButtonPositionRight = 1,
+    TSMessageButtonPositionBottom = 2,
+};
+
 @interface TSMessageView () <UIGestureRecognizerDelegate>
 
 /** The displayed title of this message */
@@ -31,6 +36,9 @@ static NSMutableDictionary *_notificationDesign;
 
 /** The title of the added button */
 @property (nonatomic, strong) NSString *buttonTitle;
+
+/** The title of the added button */
+@property(nonatomic, assign) TSMessageButtonPosition buttonPosition;
 
 /** The view controller this message is displayed in */
 @property (nonatomic, strong) UIViewController *viewController;
@@ -248,6 +256,12 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
             self.minimumPadding = TSMessageViewMinimumPadding;
         }
 
+        if ([current[@"buttonPosition"] isEqualToString:@"bottom"]) {
+            self.buttonPosition = TSMessageButtonPositionBottom;
+        } else {
+            self.buttonPosition = TSMessageButtonPositionRight;
+        }
+
         CGFloat padding = [self padding];
 
         if (!image && [[current valueForKey:@"imageName"] length])
@@ -388,11 +402,17 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
 
             self.button.contentEdgeInsets = UIEdgeInsetsMake(0.0, 5.0, 0.0, 5.0);
             [self.button sizeToFit];
-            self.button.frame = CGRectMake(screenWidth - padding - self.button.frame.size.width,
-                                           0.0,
-                                           self.button.frame.size.width,
-                                           31.0);
+            if (self.buttonPosition == TSMessageButtonPositionBottom) {
+                self.button.frame =
+                    CGRectMake(round((self.frame.size.width - self.button.frame.size.width - padding) / 2),
+                               self.frame.size.height - 31.0 - padding, self.button.frame.size.width, 31.0);
+                self.textSpaceRight = 0;
 
+            } else {
+                self.button.frame = CGRectMake(screenWidth - padding - self.button.frame.size.width, 0.0,
+                                               self.button.frame.size.width, 31.0);
+                self.textSpaceRight = self.button.frame.size.width + padding;
+            }
             [self addSubview:self.button];
 
             self.textSpaceRight = self.button.frame.size.width + padding;
@@ -484,6 +504,10 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
 
     currentHeight += padding;
 
+    if (_button != nil && self.buttonPosition == TSMessageButtonPositionBottom) {
+        currentHeight += self.button.frame.size.height + padding;
+    }
+
     if (self.iconImageView)
     {
         // Check if that makes the popup larger (height)
@@ -518,10 +542,15 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
 
     if (self.button)
     {
-        self.button.frame = CGRectMake(self.frame.size.width - self.textSpaceRight,
-                                       round((self.frame.size.height / 2.0) - self.button.frame.size.height / 2.0),
-                                       self.button.frame.size.width,
-                                       self.button.frame.size.height);
+        if (self.buttonPosition == TSMessageButtonPositionBottom) {
+            self.button.frame = CGRectMake(round((self.frame.size.width - self.button.frame.size.width) / 2),
+                                           self.frame.size.height - 31.0 - padding, self.button.frame.size.width, 31.0);
+
+        } else {
+            self.button.frame = CGRectMake(self.frame.size.width - self.textSpaceRight,
+                                           round((self.frame.size.height / 2.0) - self.button.frame.size.height / 2.0),
+                                           self.button.frame.size.width, self.button.frame.size.height);
+        }
     }
 
 
