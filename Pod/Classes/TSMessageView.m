@@ -406,7 +406,7 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
                             action:@selector(buttonTapped:)
                   forControlEvents:UIControlEventTouchUpInside];
 
-            self.button.contentEdgeInsets = UIEdgeInsetsMake(0.0, 5.0, 0.0, 5.0);
+            self.button.contentEdgeInsets = UIEdgeInsetsMake(0.0, 15.0, 0.0, 15.0);
             [self.button sizeToFit];
             if (self.buttonPosition == TSMessageButtonPositionBottom) {
                 self.button.frame =
