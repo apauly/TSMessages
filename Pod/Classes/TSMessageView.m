@@ -420,8 +420,6 @@ canBeDismissedByUser:(BOOL)dismissingEnabled
                 self.textSpaceRight = self.button.frame.size.width + padding;
             }
             [self addSubview:self.button];
-
-            self.textSpaceRight = self.button.frame.size.width + padding;
         }
 
         // Add a border on the bottom (or on the top, depending on the view's postion)
